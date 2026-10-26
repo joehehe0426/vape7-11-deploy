@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fbfbfd" id="themeColorMeta">
+<meta name="robots" content="noindex, nofollow">
+<title>Vape7-11 盤點</title>
+<meta http-equiv="Cache-Control" content="no-store">
+<link rel="stylesheet" href="staff.css?v=124">
+<script src="staff-boot.js?v=124"></script>
+</head>
+<body>
+<div class="app" id="app">
+  <section class="login" id="loginView">
+    <div class="login__card">
+      <p class="login__brand">Vape7-11</p>
+      <h1>庫存盤點</h1>
+      <p class="login__sub" id="loginSub">每人獨立帳號 · 操作會記名稽核 · 介面 124</p>
+      <input type="text" id="nameInput" maxlength="32" placeholder="員工帳號（例如 admin）" value="" autocomplete="username">
+      <input type="password" id="pinInput" maxlength="72" placeholder="密碼" autocomplete="current-password">
+      <p class="err hidden" id="loginErr"></p>
+      <button type="button" class="btn btn--primary" id="loginBtn">登入</button>
+      <button type="button" class="btn btn--ghost hidden" id="serverBtn">更改網站網址</button>
+      <p class="login__theme-label">外觀</p>
+      <div class="theme-switch" role="group" aria-label="外觀">
+        <button type="button" class="theme-switch__btn" data-theme-set="light">淺色</button>
+        <button type="button" class="theme-switch__btn" data-theme-set="dark">深色</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="login hidden" id="pinChangeView">
+    <div class="login__card">
+      <p class="login__brand">Vape7-11</p>
+      <h1 id="pinChangeTitle">請先設定密碼</h1>
+      <p class="login__sub" id="pinChangeSub">密碼最少 8 位，並須包含特殊字元（例如 ! @ # $ %）。</p>
+      <input type="password" id="currentPinInput" class="hidden" maxlength="72" placeholder="現有密碼" autocomplete="current-password">
+      <input type="password" id="newPinInput" maxlength="72" minlength="8" placeholder="新密碼（最少 8 位＋特殊字元）" autocomplete="new-password">
+      <input type="password" id="confirmPinInput" maxlength="72" minlength="8" placeholder="再輸入一次新密碼" autocomplete="new-password">
+      <p class="err hidden" id="pinChangeErr"></p>
+      <button type="button" class="btn btn--primary" id="pinChangeBtn">儲存密碼</button>
+      <button type="button" class="btn btn--ghost hidden" id="pinChangeCancelBtn">取消</button>
+    </div>
+  </section>
+
+  <section class="main hidden" id="mainView">
+    <header class="top">
+      <div class="top__left">
+        <button type="button" class="btn btn--ghost hidden" id="backBtn" style="width:auto;min-width:72px">← 返回</button>
+        <div>
+          <p class="top__brand">Vape7-11 · 雲端庫存 · <span id="actorLabel">—</span></p>
+          <h1 id="productTitle">選擇商品</h1>
+        </div>
+      </div>
+      <div class="top__actions">
+        <div class="theme-switch theme-switch--compact" role="group" aria-label="外觀">
+          <button type="button" class="theme-switch__btn" data-theme-set="light">淺色</button>
+          <button type="button" class="theme-switch__btn" data-theme-set="dark">深色</button>
+        </div>
+        <button type="button" class="btn btn--ghost" id="changePinNavBtn">更改密碼</button>
+        <button type="button" class="btn btn--ghost" id="logoutBtn">登出</button>
+      </div>
+    </header>
+
+    <div class="tabs" id="mainTabs" role="tablist">
+      <button type="button" class="tab is-active" id="tabStock" data-tab="stock">商品</button>
+      <button type="button" class="tab" id="tabTotals" data-tab="totals">總庫存</button>
+      <button type="button" class="tab" id="tabMembers" data-tab="members">會員</button>
+      <button type="button" class="tab hidden" id="tabPricing" data-tab="pricing">價錢</button>
+      <button type="button" class="tab hidden" id="tabStatement" data-tab="statement">日結</button>
+      <button type="button" class="tab hidden" id="tabHistory" data-tab="history">紀錄</button>
+      <button type="button" class="tab hidden" id="tabStaff" data-tab="staff">員工</button>
+    </div>
+
+    <div id="stockListPanel">
+      <div class="toolbar">
+        <input type="search" id="searchInput" placeholder="搜尋商品…">
+        <select id="catFilter">
+          <option value="all">全部分類</option>
+          <option value="pod">煙彈</option>
+          <option value="disposable">一次性</option>
+          <option value="device">煙機</option>
+        </select>
+        <button type="button" class="btn btn--primary" id="addProductBtn" style="width:auto">＋ 新增商品</button>
+      </div>
+      <aside class="products products--full" id="productList" aria-label="Products"></aside>
+    </div>
+
+    <div id="addProductPanel" class="hidden">
+      <form class="form-card" id="addProductForm">
+        <label class="field">
+          <span>中文名稱 *</span>
+          <input type="text" id="newNameZh" required maxlength="128" placeholder="例如 Floral Gen5 煙彈">
+        </label>
+        <label class="field">
+          <span>英文名稱</span>
+          <input type="text" id="newNameEn" maxlength="128" placeholder="可留空，預設用中文">
+        </label>
+        <label class="field">
+          <span>分類 *</span>
+          <select id="newCat">
+            <option value="pod">煙彈</option>
+            <option value="disposable">一次性</option>
+            <option value="device">煙機</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>售價 (HK$)</span>
+          <input type="number" id="newPrice" min="0" step="1" value="0" inputmode="decimal">
+        </label>
+        <label class="field">
+          <span>成本 (HK$)</span>
+          <input type="number" id="newCost" min="0" step="1" value="0" inputmode="decimal">
+        </label>
+        <label class="field">
+          <span>商品代碼 slug（可留空自動產生）</span>
+          <input type="text" id="newSlug" maxlength="64" placeholder="floral-gen5-pod" pattern="[a-z0-9\-]*">
+        </label>
+        <label class="field">
+          <span>口味／顏色（每行一個）*</span>
+          <textarea id="newVariants" rows="6" placeholder="西瓜西瓜&#10;冰爽薄荷&#10;珍珠白"></textarea>
+        </label>
+        <p class="err hidden" id="addProductErr"></p>
+        <button type="submit" class="btn btn--primary" id="addProductSaveBtn">儲存商品</button>
+      </form>
+    </div>
+
+    <div id="stockDetailPanel" class="hidden">
+      <div class="toolbar">
+        <input type="search" id="variantSearch" placeholder="搜尋口味／顏色…">
+        <label class="toggle"><input type="checkbox" id="lowOnly"> 只顯示低庫存</label>
+        <button type="button" class="btn btn--ghost" id="addVariantBtn" style="width:auto">＋ 新增口味</button>
+      </div>
+      <div class="variants variants--page" id="variantPanel">
+        <p class="empty">選擇商品後顯示庫存</p>
+      </div>
+    </div>
+
+    <div id="totalsPanel" class="hidden">
+      <p class="members-meta" id="totalsMeta">載入中…</p>
+      <div class="members-list" id="totalsList"></div>
+    </div>
+
+    <div id="pricingPanel" class="hidden">
+      <p class="members-meta" id="pricingMeta">僅管理員可改成本同售價。網站目錄價仍以網站檔案為準。</p>
+      <div class="members-list" id="pricingList"></div>
+    </div>
+
+    <div id="statementPanel" class="hidden">
+      <div class="toolbar statement-toolbar">
+        <button type="button" class="btn btn--ghost" id="statementPrev" style="width:auto">← 前一日</button>
+        <input type="date" id="statementDate" min="2020-01-01" autocomplete="off">
+        <button type="button" class="btn btn--ghost" id="statementNext" style="width:auto">後一日 →</button>
+        <button type="button" class="btn btn--ghost" id="statementRefresh" style="width:auto">重新整理</button>
+      </div>
+      <p class="members-meta" id="statementMeta">載入中…</p>
+      <div id="statementSummary" class="statement-summary"></div>
+      <div class="members-list" id="statementList"></div>
+    </div>
+
+    <div id="membersPanel" class="hidden">
+      <div class="toolbar">
+        <input type="search" id="memberSearch" placeholder="搜尋姓名、電話、電郵、會員編號…">
+        <button type="button" class="btn btn--ghost" id="memberRefreshBtn" style="width:auto">重新整理</button>
+      </div>
+      <p class="members-meta" id="membersMeta">載入中…</p>
+      <div class="members-list" id="membersList"></div>
+    </div>
+
+    <div id="memberDetailPanel" class="hidden">
+      <div class="member-detail-head">
+        <p class="members-meta" id="memberDetailMeta">—</p>
+      </div>
+      <form id="deductForm" class="add-form purchase-form" novalidate>
+        <h2 style="font-size:1rem;margin:0 0 8px">扣積分</h2>
+        <input type="tel" id="deductPoints" placeholder="要扣多少分（例如 100）" inputmode="numeric" autocomplete="off">
+        <input type="text" id="deductNote" maxlength="255" placeholder="原因（可選，例如兌換禮品）" autocomplete="off">
+        <p class="err hidden" id="deductErr"></p>
+        <button type="button" class="btn btn--primary" id="deductBtn">扣積分</button>
+      </form>
+      <form id="purchaseForm" class="add-form purchase-form" novalidate>
+        <h2 style="font-size:1rem;margin:0 0 8px">登記消費（會加積分）</h2>
+        <input type="number" id="purchaseAmount" min="0" step="1" placeholder="金額 HK$（例如 280）" inputmode="decimal">
+        <input type="text" id="purchaseItems" maxlength="500" placeholder="購買內容（例如 Floral 煙彈 x2）" autocomplete="off">
+        <input type="tel" id="purchasePoints" placeholder="積分（空白＝金額自動計；或填正數後按扣積分）" inputmode="numeric" autocomplete="off">
+        <input type="text" id="purchaseNote" maxlength="255" placeholder="備註（可選）" autocomplete="off">
+        <p class="err hidden" id="purchaseErr"></p>
+        <button type="submit" class="btn btn--primary">儲存消費紀錄</button>
+        <button type="button" class="btn btn--ghost" id="purchaseDeductBtn">扣積分</button>
+      </form>
+      <section class="history" style="margin-top:16px">
+        <h2 style="font-size:1rem;margin:0 0 8px">消費紀錄</h2>
+        <p class="members-meta" id="purchaseListMeta">載入中…</p>
+        <div class="members-list" id="purchaseList"></div>
+      </section>
+      <section class="history" style="margin-top:12px">
+        <h2 style="font-size:1rem;margin:0 0 8px">WhatsApp／網站訂單</h2>
+        <div class="members-list" id="memberOrdersList"></div>
+      </section>
+    </div>
+
+    <div id="historyPanel" class="hidden">
+      <details class="history" open>
+        <summary>最近庫存變動</summary>
+        <ul id="moveList"></ul>
+      </details>
+      <details class="history">
+        <summary>完整操作稽核（登入／加減庫存／失敗）</summary>
+        <ul id="auditList"></ul>
+      </details>
+    </div>
+
+    <div id="staffUsersPanel" class="hidden">
+      <div class="toolbar">
+        <button type="button" class="btn btn--ghost" id="staffUsersRefreshBtn" style="width:auto">重新整理</button>
+      </div>
+      <p class="members-meta" id="staffUsersMeta">僅管理員可新增／停用職員</p>
+      <div class="members-list" id="staffUsersList"></div>
+      <form id="createStaffForm" class="add-form" style="margin-top:16px">
+        <h2 style="font-size:1rem;margin:0 0 8px">新增員工（僅管理員）</h2>
+        <input type="text" id="newStaffUsername" maxlength="32" placeholder="帳號（英文／數字）" autocomplete="off">
+        <input type="text" id="newStaffDisplay" maxlength="64" placeholder="顯示名稱" autocomplete="off">
+        <input type="password" id="newStaffPin" maxlength="72" minlength="8" placeholder="初始密碼（最少 8 位＋特殊字元）" autocomplete="new-password">
+        <select id="newStaffRole">
+          <option value="staff">職員</option>
+          <option value="admin">管理員</option>
+        </select>
+        <p class="err hidden" id="createStaffErr"></p>
+        <button type="submit" class="btn btn--primary">建立帳號</button>
+      </form>
+    </div>
+  </section>
+</div>
+<div class="ask-overlay hidden" id="askOverlay">
+  <div class="ask-card" role="dialog" aria-modal="true" aria-labelledby="askTitle">
+    <p id="askTitle">輸入積分</p>
+    <input type="number" id="askInput" inputmode="numeric" step="1">
+    <p class="err hidden" id="askErr"></p>
+    <div class="row-actions">
+      <button type="button" class="btn btn--ghost" id="askCancel">取消</button>
+      <button type="button" class="btn btn--primary" id="askOk">確定</button>
+    </div>
+  </div>
+</div>
+<script src="staff.js?v=126"></script>
+</body>
+</html>
